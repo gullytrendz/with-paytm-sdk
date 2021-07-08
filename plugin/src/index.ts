@@ -15,22 +15,15 @@ const gradleMaven =
 const withPaytmSdk: ConfigPlugin<void> = (config) => {
   const _props = {};
 
-  // Android
-  config = AndroidConfig.Permissions.withPermissions(config, [
-    'android.permission.ACCESS_NETWORK_STATE',
-    'android.permission.BLUETOOTH',
-    'android.permission.CAMERA',
-    'android.permission.INTERNET',
-    'android.permission.MODIFY_AUDIO_SETTINGS',
-    'android.permission.RECORD_AUDIO',
-    'android.permission.SYSTEM_ALERT_WINDOW',
-    'android.permission.WAKE_LOCK',
-  ]);
-
   config = withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
+      const pattern = new RegExp(
+        `artifactory\.paytm\.in`
+      );
       const buildGradle = config.modResults.contents;
-      config.modResults.contents = buildGradle + `\n${gradleMaven}\n`;
+      if (!buildGradle.match(pattern)) {
+        config.modResults.contents = buildGradle + `\n${gradleMaven}\n`;
+      }
     } else {
       throw new Error(
         'Cannot add maven gradle because the build.gradle is not groovy',
@@ -41,9 +34,14 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
 
   config = withAppBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
-      config.modResults.contents = setAppBuildscript(
-        config.modResults.contents,
+      const pattern = new RegExp(
+        `com\.squareup\.okhttp3\:okhttp\-urlconnection\:4\.2\.1`
       );
+      if (!config.modResults.contents.match(pattern)) {
+        config.modResults.contents = setAppBuildscript(
+          config.modResults.contents,
+        );
+      }
     } else {
       throw new Error(
         'Cannot add maven gradle because the build.gradle is not groovy',
@@ -65,7 +63,7 @@ function setAppBuildscript(buildGradle: string) {
             implementation "com.squareup.okhttp3:okhttp-urlconnection:4.2.1"
         `,
   );
-  return buildGradle;
+  return newBuildGradle;
 }
 
 export default createRunOncePlugin(withPaytmSdk, pkg.name, pkg.version);
