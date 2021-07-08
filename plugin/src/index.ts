@@ -12,7 +12,7 @@ const pkg = require('paytm_allinone_react-native/package.json');
 const gradleMaven =
   'allprojects { repositories { maven { url "https://artifactory.paytm.in/libs-release-local" } } }';
 
-const withPaytmSDK: ConfigPlugin<void> = (config) => {
+const withPaytmSdk: ConfigPlugin<void> = (config) => {
   const _props = {};
 
   // Android
@@ -72,4 +72,4 @@ function setAppBuildscript(buildGradle: string) {
   return buildGradle;
 }
 
-export default createRunOncePlugin(withPaytmSDK, pkg.name, pkg.version);
+export default createRunOncePlugin(withPaytmSdk, pkg.name, pkg.version);
