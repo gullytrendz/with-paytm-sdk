@@ -30,11 +30,7 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
   config = withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === 'groovy') {
       const buildGradle = config.modResults.contents;
-      if (buildGradle.includes('expo-camera/android/maven')) {
-        config.modResults.contents = buildGradle;
-      } else {
-        config.modResults.contents = buildGradle + `\n${gradleMaven}\n`;
-      }
+      config.modResults.contents = buildGradle + `\n${gradleMaven}\n`;
     } else {
       throw new Error(
         'Cannot add maven gradle because the build.gradle is not groovy',
