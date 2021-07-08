@@ -1,7 +1,7 @@
 {
   "name": "with-paytm-sdk",
   "version": "1.0.0",
-  "nativePackage": true,
+  "main": "app.plugin.js",
   "dependencies": {
     "@expo/config-plugins": "^2.0.0",
     "base64-js": "^1.1.2",
