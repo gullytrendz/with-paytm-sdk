@@ -6,7 +6,12 @@ import {
   withGradleProperties,
   withProjectBuildGradle,
 } from '@expo/config-plugins';
-import { withInfoPlist } from '@expo/config-plugins/build';
+import {
+  IOSConfig,
+  withDangerousMod,
+  withInfoPlist,
+} from '@expo/config-plugins/build';
+import fs from 'fs/promises';
 
 const pkg = require('paytm_allinone_react-native/package.json');
 
@@ -64,6 +69,54 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
     ];
     return config;
   });
+
+  config = withDangerousMod(config, [
+    'ios',
+    async (config) => {
+      const fileInfo = IOSConfig.Paths.getAppDelegate(
+        config.modRequest.projectRoot,
+      );
+      let contents = await fs.readFile(fileInfo.path, 'utf-8');
+      if (fileInfo.language === 'objc') {
+        if (!contents.includes('#import <React/RCTLinkingManager.h>')) {
+          contents = contents.replace(
+            /#import "AppDelegate.h"/g,
+            `#import "AppDelegate.h"
+          #import <React/RCTLinkingManager.h>;`,
+          );
+        }
+
+        if (
+          !contents.includes(
+            '[NSDictionary dictionaryWithObject:urlString forKey:@"appInvokeNotificationKey"];',
+          )
+        ) {
+          contents = contents.replace(
+            /@end/g,
+            `- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+          options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+          {
+
+          NSString *urlString = url.absoluteString;
+          NSDictionary *userInfo =
+          [NSDictionary dictionaryWithObject:urlString forKey:@"appInvokeNotificationKey"];
+          [[NSNotificationCenter defaultCenter] postNotificationName:
+          @"appInvokeNotification" object:nil userInfo:userInfo];
+          return [RCTLinkingManager application:app openURL:url options:options];
+          }
+          @end`,
+          );
+        }
+      } else {
+        // TODO: Support Swift
+        throw new Error(
+          `Cannot add Firebase code to AppDelegate of language "${fileInfo.language}"`,
+        );
+      }
+      await fs.writeFile(fileInfo.path, contents);
+      return config;
+    },
+  ]);
 
   return config;
 };
