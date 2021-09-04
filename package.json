@@ -21,7 +21,6 @@
     "clean:plugin": "expo-module clean plugin",
     "lint:plugin": "eslint plugin/src/*",
     "prepare": "yarn build:plugin",
-    "postinstall": "cross-os darwin-extract"
   },
   "cross-os": {
     "darwin-extract": {
