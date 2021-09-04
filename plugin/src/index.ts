@@ -98,7 +98,7 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
           )
         ) {
           contents = replaceLast(contents, '@end', `- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
-          options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+          poptions:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
           {
 
           NSString *urlString = url.absoluteString;
