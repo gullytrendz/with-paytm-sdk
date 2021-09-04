@@ -18,7 +18,7 @@ const pkg = require('paytm_allinone_react-native/package.json');
 const gradleMaven =
   'allprojects { repositories { maven { url "https://artifactory.paytm.in/libs-release-local" } } }';
 
-const replaceLast = (str, what, replacement) => {
+const replaceLast = (str: string, what: string, replacement: string) => {
         var pcs = str.split(what);
         var lastPc = pcs.pop();
         return pcs.join(what) + replacement + lastPc;
