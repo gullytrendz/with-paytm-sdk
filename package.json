@@ -20,7 +20,7 @@
     "build:plugin": "tsc --build plugin",
     "clean:plugin": "expo-module clean plugin",
     "lint:plugin": "eslint plugin/src/*",
-    "prepare": "yarn build:plugin",
+    "prepare": "yarn build:plugin"
   },
   "cross-os": {
     "darwin-extract": {
