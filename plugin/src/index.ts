@@ -18,6 +18,12 @@ const pkg = require('paytm_allinone_react-native/package.json');
 const gradleMaven =
   'allprojects { repositories { maven { url "https://artifactory.paytm.in/libs-release-local" } } }';
 
+const replaceLast = (str, what, replacement) => {
+        var pcs = str.split(what);
+        var lastPc = pcs.pop();
+        return pcs.join(what) + replacement + lastPc;
+    };
+
 const withPaytmSdk: ConfigPlugin<void> = (config) => {
   const _props = {};
 
@@ -91,7 +97,19 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
             '[NSDictionary dictionaryWithObject:urlString forKey:@"appInvokeNotificationKey"];',
           )
         ) {
-          contents = contents.replace(
+          contents = replaceLast(contents, '@end', `- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
+          options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+          {
+
+          NSString *urlString = url.absoluteString;
+          NSDictionary *userInfo =
+          [NSDictionary dictionaryWithObject:urlString forKey:@"appInvokeNotificationKey"];
+          [[NSNotificationCenter defaultCenter] postNotificationName:
+          @"appInvokeNotification" object:nil userInfo:userInfo];
+          return [RCTLinkingManager application:app openURL:url options:options];
+          }
+          @end`);
+          /*contents = contents.replace(
             /@end/g,
             `- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url
           options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
@@ -105,7 +123,7 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
           return [RCTLinkingManager application:app openURL:url options:options];
           }
           @end`,
-          );
+          );*/
         }
       } else {
         // TODO: Support Swift
