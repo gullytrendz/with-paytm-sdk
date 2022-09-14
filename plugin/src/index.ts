@@ -70,7 +70,7 @@ const withPaytmSdk: ConfigPlugin<void> = (config) => {
     config.modResults.CFBundleURLTypes = [
       ...existingUrlSchemes,
       {
-        CFBundleURLSchemes: ['paytmYONLNY36485308782125'],
+        CFBundleURLSchemes: ['paytmFJtqpo62944114418498'],
       },
     ];
     return config;
